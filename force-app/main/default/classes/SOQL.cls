@@ -340,12 +340,23 @@ public with sharing class SOQL {
 		// Check if the email is not null
 			if (email != null && email.contains('@')) {
 		// Add the email domain to the set
-          String domain = email.split('@')[1].toLowerCase();domains.add(domain);
+		  String domain = email.split('@')[1].toLowerCase();domains.add(domain);
 			}
 		}
 		// Query the Accounts
-		List<Account> matchingAccounts = [SELECT Id, Name, Website FROM Account WHERE Website != null
-		];
+		List<Account> accounts = [SELECT Id, Name, Website FROM Account WHERE Website != null];
+		List<Account> matchingAccounts = new List<Account>();
+	
+	for (Account acc : accounts) {
+		String website = acc.Website.toLowerCase();
+		
+		for (String domain : domains) {
+			if (website.contains(domain)) {
+				matchingAccounts.add(acc);
+				break;
+			}
+		}
+	}
 		return matchingAccounts; // Replace null with the variable you used to store the result
 	}
 
